@@ -1,0 +1,6 @@
+##! /bin/sh
+
+/home/pi/Desktop/led_interface/ngrok start led_interface_hypervisor \
+  --config=/home/pi/.ngrok2/ngrok.yml -log=stdout > \
+  /home/pi/Desktop/led_interface_hypervisor/ngrok.log &
+
