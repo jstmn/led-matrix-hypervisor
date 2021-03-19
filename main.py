@@ -1,31 +1,80 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-#  main.py
-#  
-#  Copyright 2021  Jeremy S. Morgan
-#  
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#  
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
-#  
-#  
+from threading import Thread
+from flask import Flask
+from flask import request
+import time
+import psutil
+import subprocess
+import os
+import signal
+import json
+import requests
 
-def main():
-	
-	return 0
+from ngrok_manager import NgrokManager
+from state_manager import StateManager
 
-if __name__ == '__main__':
-	main()
+app = Flask(__name__)
 
+# Constants
+PORT = 5001
+#HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
+HEROKU_HOSTNAME = "https://584e007c966d.ngrok.io"
+APP_CMD = "python3.6 ~/Desktop/led_interface/app.py"
+APP_DIRECTORY = "~/Desktop/led_interface/"
+NGROK_CYCLE_TIME_SEC = 30*60
+
+# Configs
+hypervisor_ngrok_manager_cfg = {
+    "port": PORT,
+    "cycle_time": NGROK_CYCLE_TIME_SEC}
+app_ngrok_manager_cfg = {
+    "port": 5000,
+    "cycle_time": NGROK_CYCLE_TIME_SEC}
+    
+state_manager_config = {
+    "app_command": APP_CMD,
+    "app_directory": APP_DIRECTORY}
+
+state_manager = StateManager()
+hypervisor_ngrok_manager = NgrokManager(hypervisor_ngrok_manager_cfg)
+app_ngrok_manager = NgrokManager(app_ngrok_manager_cfg)
+
+
+def update_heroku_known_hostnames():
+    """ Update the heroku server with the current public ngrok hostnames
+    """
+    
+    url_app = f"{HEROKU_HOSTNAME}/update_rpi_hostname_app"
+    url_hypervisor = f"{HEROKU_HOSTNAME}/update_rpi_hostname_hypervisor"
+    
+    data_app = {"HOSTNAME": app_ngrok_manager.get_public_hostname())}
+    data_hypervisor = {"HOSTNAME": hypervisor_ngrok_manager.get_public_hostname())}
+    try:
+        r_hypervisor = requests.post(url_hypervisor, json=data_hypervisor)
+        r_app = requests.post(url_app, json=data_app)
+        print("app response:")
+        print(r_app.json())
+        print("hypervisor response:")
+        print(r_hypervisor.json())
+    except requests.exceptions.ConnectionError:
+        print(f"Connection error sending POST message to '{url_app}' and '{url_hypervisor}' ")
+    except json.decoder.JSONDecodeError:
+        print(f"JSONDecodeError")
+
+@app.route('/respawn_app', methods=['POST'])
+def payload():
+    print("recieved POST to /respawn_app")
+    print("killing existing process")
+    state_manager.kill()
+    state_manager.delete_app()
+    state_manager.reclone_app()
+    print("starting new process")
+    state_manager.run()
+    return 'OK'
+    
+
+if __name__ == "__main__":
+    try:
+        app.run(debug=True, port=PORT)
+    except Exception:
+        print("Socket already in use, exiting()")
+ 

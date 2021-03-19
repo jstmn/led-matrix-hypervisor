@@ -1,0 +1,5 @@
+
+__pycache__/
+ngrok.log
+ngrok_hypervisor.log
+push_to_master.sh
