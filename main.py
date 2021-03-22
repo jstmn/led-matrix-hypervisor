@@ -20,15 +20,18 @@ PORT = 5001
 HEROKU_HOSTNAME = "https://584e007c966d.ngrok.io"
 APP_CMD = "python3.6 ~/Desktop/led_interface/app.py"
 APP_DIRECTORY = "~/Desktop/led_interface/"
+NGROK_FILEPATH = "/home/pi/Desktop/led_interface_hypervisor/ngrok"
 NGROK_CYCLE_TIME_SEC = 30*60
 
 # Configs
 hypervisor_ngrok_manager_cfg = {
     "port": PORT,
-    "cycle_time": NGROK_CYCLE_TIME_SEC}
+    "cycle_time": NGROK_CYCLE_TIME_SEC,
+    "ngrok_filepath": NGROK_FILEPATH}
 app_ngrok_manager_cfg = {
     "port": 5000,
-    "cycle_time": NGROK_CYCLE_TIME_SEC}
+    "cycle_time": NGROK_CYCLE_TIME_SEC,
+    "ngrok_filepath": NGROK_FILEPATH}
     
 state_manager_config = {
     "app_command": APP_CMD,
