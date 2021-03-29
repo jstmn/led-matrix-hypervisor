@@ -27,11 +27,14 @@ NGROK_CYCLE_TIME_SEC = 30*60
 hypervisor_ngrok_manager_cfg = {
     "port": PORT,
     "cycle_time": NGROK_CYCLE_TIME_SEC,
-    "ngrok_filepath": NGROK_FILEPATH}
+    "ngrok_filepath": NGROK_FILEPATH,
+    "out_pipe": "/home/pi/Desktop/led_interface_hypervisor/ngrok_hypervisor_log.txt"
+    }
 app_ngrok_manager_cfg = {
     "port": 5000,
     "cycle_time": NGROK_CYCLE_TIME_SEC,
-    "ngrok_filepath": NGROK_FILEPATH}
+    "ngrok_filepath": NGROK_FILEPATH,
+    "out_pipe": "/home/pi/Desktop/led_interface_hypervisor/ngrok_app_log.txt"}
     
 state_manager_config = {
     "app_command": APP_CMD,
@@ -66,11 +69,9 @@ def update_heroku_known_hostnames():
 @app.route('/respawn_app', methods=['POST'])
 def payload():
     print("recieved POST to /respawn_app")
-    print("killing existing process")
     state_manager.kill()
     state_manager.delete_app()
     state_manager.reclone_app()
-    print("starting new process")
     state_manager.run()
     return 'OK'
     

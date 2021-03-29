@@ -1,8 +1,12 @@
 
 __pycache__/
 Python-3.6.5/
+venv/
+.vscode/
+ngrok_unittesting_log.txt
 
 ngrok_log.txt
 ngrok.log
 ngrok_hypervisor.log
 push_to_master.sh
+ngrok

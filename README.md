@@ -28,6 +28,8 @@ install pip: `curl -O https://bootstrap.pypa.io/get-pip.py; sudo python3.6 get-p
 
 
 
+
+
 4. Install required python packages
 
 `python3.6 -m pip install spidev`
@@ -39,3 +41,6 @@ a virtual environment for each project. I know that nothing else on the pi is go
 python though. 
 
 
+5. Alt: install venv
+
+`python3.6 -m venv ./venv/`
