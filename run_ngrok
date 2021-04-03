@@ -1,3 +1,0 @@
-#! /bin/sh
-
-/home/pi/Desktop/led_interface_hypervisor/ngrok http 5001 &
