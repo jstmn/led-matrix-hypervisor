@@ -17,8 +17,8 @@ app = Flask(__name__)
 # Constants
 PORT = 5001
 APP_PORT = 5000
-#HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
-HEROKU_HOSTNAME = "https://d2f821823f24.ngrok.io"
+HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
+#HEROKU_HOSTNAME = "https://d2f821823f24.ngrok.io"
 APP_DIRECTORY = "/home/pi/Desktop/led-matrix-app"
 APP_CMD = f"python3.6 {APP_DIRECTORY}/app.py"
 NGROK_CYCLE_TIME_SEC = 30*60
@@ -45,7 +45,6 @@ def send_json_post(url: str, json_data: dict, verbose=False):
     """ Send a POST request with json data
     """
     try:
-        #print("sending: <ommited>", "to:",url)
         req = requests.post(url, json=json_data)
         if verbose:
             print("response:", req)
@@ -54,7 +53,7 @@ def send_json_post(url: str, json_data: dict, verbose=False):
         print(f"Connection error sending POST message to '{url}'")
     except json.decoder.JSONDecodeError as e:
         print(f"JSONDecodeError: {e}")
-        print(f"  url:         {url}")
+        print(f"  url:           {url}")
         print(f"  json fields: {[f for f in json_data]}")
 
 def update_heroku_known_hostnames_thread():
@@ -86,7 +85,7 @@ def payload():
     state_manager.kill_app()
     state_manager.delete_app()
     state_manager.download_app()
-    state_manager.run() # TODO: uncomment
+    state_manager.run()
     return 'OK'
     
 

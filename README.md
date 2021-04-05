@@ -4,18 +4,11 @@
 
 2. Setup scripts to run on startup
 
-Add the following to */etc/rc.local*:
+Add the following line to *.bashrc*
 
 ```bash
-
-sleep 5
-/home/pi/Desktop/led_interface/run_ngrok
-/home/pi/Desktop/led_interface_hypervisor/run_ngrok
-``` 
-
-`chmod +x run_app`
-`chmod +x run_ngrok`
-
+python3.6 /home/pi/Desktop/led_interface_hypervisor/main.py &
+```
 
 2. Install python3.6
 ```bash
@@ -27,18 +20,14 @@ install python3.6: `chmod +x install_python3_6.sh`
 install pip: `curl -O https://bootstrap.pypa.io/get-pip.py; sudo python3.6 get-pip.py`
 
 
-
-
-
 4. Install required python packages
 
 `python3.6 -m pip install spidev`
 `python3.6 -m pip install flask`
 `python3.6 -m pip install psutil`
 
-*Note*: installing these packages system wide is bad practice. Standard practice would be to have
-a virtual environment for each project. I know that nothing else on the pi is going to be running
-python though. 
+*Note*: Installing these packages system wide is bad practice. Standard practice would be to use a virtual environment.
+ In my defence, nothing else on the pi is going to be running python3.6. 
 
 
 5. Alt: install venv
