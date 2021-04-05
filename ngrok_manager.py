@@ -32,12 +32,12 @@ class NgrokManager:
         self.config = config
         self.tunnel = None
 
-    def _start_proc(self):
+    def start_tunnel(self):
         """ Start a ngrok tunnel
         """
         self.tunnel = ngrok.connect(addr=self.config["port"])
 
-    def _kill_proc(self):
+    def stop_tunnel(self):
         """ Kill the current running ngrok tunnels
         """
         if self.tunnel is None:
