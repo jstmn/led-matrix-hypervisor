@@ -2,6 +2,7 @@
 from ngrok_manager import NgrokManager, ngrok_process_is_running
 import unittest
 import time
+import tqdm
 
 
 class TestNgrokManager(unittest.TestCase):
@@ -19,8 +20,7 @@ class TestNgrokManager(unittest.TestCase):
         ng_manager = NgrokManager(self.config)
         
         # Create NgrokManager, start process
-        ng_manager._start_proc()
-        time.sleep(1)
+        ng_manager.start_tunnel()
         
         self.assertTrue(ngrok_process_is_running())
         
@@ -29,7 +29,7 @@ class TestNgrokManager(unittest.TestCase):
         self.assertTrue(isinstance(hostname, str))
         self.assertGreater(len(hostname), 15) # http://_____.com
         
-        ng_manager._kill_proc()
+        ng_manager.stop_tunnel()
         hostname = ng_manager.get_public_hostname()
         self.assertTrue(hostname is None)
 
@@ -41,12 +41,10 @@ class TestNgrokManager(unittest.TestCase):
         
         public_hostnames = []
 
-        for _ in range(5):
+        for _ in tqdm.tqdm(range(5)):
 
             # Create NgrokManager, start process
-            ng_manager._start_proc()
-            time.sleep(1)
-            
+            ng_manager.start_tunnel()
             self.assertTrue(ngrok_process_is_running())
             
             hostname = ng_manager.get_public_hostname()
@@ -57,7 +55,7 @@ class TestNgrokManager(unittest.TestCase):
             assert hostname not in public_hostnames
             public_hostnames.append(hostname)
 
-            ng_manager._kill_proc()
+            ng_manager.stop_tunnel()
             hostname = ng_manager.get_public_hostname()
             self.assertTrue(hostname is None)
 

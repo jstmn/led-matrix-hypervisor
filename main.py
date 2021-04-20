@@ -9,8 +9,12 @@ import signal
 import json
 import requests
 
+from utils import wait_for_internet
 from ngrok_manager import NgrokManager
 from state_manager import StateManager
+
+if __name__ == "__main__":
+    wait_for_internet()
 
 app = Flask(__name__)
 
@@ -18,7 +22,7 @@ app = Flask(__name__)
 PORT = 5001
 APP_PORT = 5000
 HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
-#HEROKU_HOSTNAME = "https://d2f821823f24.ngrok.io"
+#HEROKU_HOSTNAME = "https://39fd2a0aabbc.ngrok.io"
 APP_DIRECTORY = "/home/pi/Desktop/led-matrix-app"
 APP_CMD = f"python3.6 {APP_DIRECTORY}/app.py"
 NGROK_CYCLE_TIME_SEC = 30*60
@@ -54,7 +58,10 @@ def send_json_post(url: str, json_data: dict, verbose=False):
     except json.decoder.JSONDecodeError as e:
         print(f"JSONDecodeError: {e}")
         print(f"  url:           {url}")
-        print(f"  json fields: {[f for f in json_data]}")
+        print(f"  json fields:   {[f for f in json_data]}")
+        print(f"  req:           {req}")
+        
+        
 
 def update_heroku_known_hostnames_thread():
     """ Update the heroku server with the known app & hypervisor public

@@ -38,12 +38,6 @@ class TestStateManager(unittest.TestCase):
         except FileNotFoundError:
             return False
         
-    #def test_app_exists_on_disk(self):
-    #    print("app downloaded:",self.app_exists_on_disk(self.config["app_directory"]))
-    
-    #def test_app_exists_on_disk(self):
-    #    print("app running:",app_running())
-    
     def test_start_stop(self):
         """ Test that the app starts up and shuts down cleanly
         """
@@ -75,23 +69,6 @@ class TestStateManager(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
 
 
 
