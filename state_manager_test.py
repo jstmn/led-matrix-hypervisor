@@ -52,7 +52,7 @@ class TestStateManager(unittest.TestCase):
         sm.kill_app()
         self.assertFalse(app_running())
 
-    def test_clone_delete(self):
+    def teeest_clone_delete(self):
         """ Test that the app is cloned and then deleted 
         """
         self.assertFalse(self.app_exists_on_disk(self.config["app_directory"]))

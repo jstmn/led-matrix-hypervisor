@@ -21,11 +21,20 @@ app = Flask(__name__)
 # Constants
 PORT = 5001
 APP_PORT = 5000
-HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
-#HEROKU_HOSTNAME = "https://39fd2a0aabbc.ngrok.io"
+#HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
+#HEROKU_HOSTNAME = "http://127.0.0.1:5002"
+HEROKU_HOSTNAME = "http://e0f8-98-42-2-132.ngrok.io"
+
+
 APP_DIRECTORY = "/home/pi/Desktop/led-matrix-app"
 APP_CMD = f"python3.6 {APP_DIRECTORY}/app.py"
+APP_URL = f"http://127.0.0.1:{APP_PORT}/LED"
 NGROK_CYCLE_TIME_SEC = 30*60
+UPDATE_HEROKU_HOSTNAME_URL = f"{HEROKU_HOSTNAME}/update_rpi_hypervisor_address"
+UPDATE_HEROKU_HOSTNAME_INTERVAL = 5
+
+
+
 
 # Configs
 hypervisor_ngrok_manager_cfg = {
@@ -41,7 +50,6 @@ state_manager.run()
 
 hypervisor_ngrok_manager = NgrokManager(hypervisor_ngrok_manager_cfg)
 hypervisor_ngrok_manager.start_tunnel()
-
 
 exit_thread = False
 
@@ -60,30 +68,24 @@ def send_json_post(url: str, json_data: dict, verbose=False):
         print(f"  url:           {url}")
         print(f"  json fields:   {[f for f in json_data]}")
         print(f"  req:           {req}")
-        
-        
 
 def update_heroku_known_hostnames_thread():
     """ Update the heroku server with the known app & hypervisor public
     ngrok addresses
     """
     global exit_thread
-    delay = 5
-    url_hypervisor = f"{HEROKU_HOSTNAME}/update_rpi_hypervisor_address"
     while True:
-        data_hypervisor = {"HOSTNAME": hypervisor_ngrok_manager.get_public_hostname()}
-        send_json_post(url_hypervisor, data_hypervisor, verbose=False)
-        time.sleep(delay)
+        data = {"HOSTNAME": hypervisor_ngrok_manager.get_public_hostname()}
+        res = send_json_post(UPDATE_HEROKU_HOSTNAME_URL, data, verbose=False)
+        time.sleep(UPDATE_HEROKU_HOSTNAME_INTERVAL)
         if exit_thread:
             break
 
-
 @app.route('/LED', methods=['POST'])
-def parse_request():
-    url = f"http://127.0.0.1:{APP_PORT}/LED"
-    res = send_json_post(url, request.json, verbose=False)
+def parse_request(): 
+    res = send_json_post(APP_URL, request.json, verbose=False)
     if res is None:
-        return {"status": "error", "app_running": False}
+        return {"status": "ERROR", "app_running": False}
     return {"status": "OK", "app_running": True}
 
 @app.route('/respawn_app', methods=['POST'])
@@ -96,12 +98,29 @@ def payload():
     return 'OK'
     
 
+"""" Example usage
+
+python3.6 ~/Desktop/led_interface_hypervisor/main.py
+"""
+
+
 if __name__ == "__main__":
     thread = Thread(target=update_heroku_known_hostnames_thread)
     thread.start()
-    app.run(debug=True, port=PORT, use_reloader=False)
+    
+    try:
+        app.run(debug=True, port=PORT, use_reloader=False)
+    except KeyboardInterrupt:
+        print("Keyboard interrupt caught, shutting down")
+        exit_thread = True
+        print("Killing app")
+        state_manager.kill_app()
+        print("Shutting down ngrok_manager")
+        hypervisor_ngrok_manager.stop_tunnel()
+        
     try:
         pass
     except Exception:
         print("Socket already in use, exiting()")
+    
     exit()

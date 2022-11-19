@@ -11,7 +11,6 @@ config:
     app_command: str. The command to run the app
     app_directory: str. The filepath to the app's directory
 }
-
 """
 
 class StateManager:
@@ -44,10 +43,16 @@ class StateManager:
         # See https://stackoverflow.com/a/4791612
         # The os.setsid() is passed in the argument preexec_fn so
         # it's run after the fork() and before  exec() to run the shell.
-        self.proc = subprocess.Popen(self.config["app_command"], stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid) 
+        self.proc = subprocess.Popen(
+            self.config["app_command"], 
+            stdout=subprocess.PIPE, 
+            shell=True, 
+            preexec_fn=os.setsid
+        ) 
         # Takes ~6 seconds to start. Adding 1.5sec for extra padding
         time.sleep(7.5) 
     
+    # TODO(@jeremysm): The app is not shutting down
     def kill_app(self):
         """ Kill the led matrix app if it's running
         """
@@ -55,5 +60,5 @@ class StateManager:
             return
         # Send the signal to all the process groups
         os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
-        time.sleep(1)
+        time.sleep(5)
 
