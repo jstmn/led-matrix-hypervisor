@@ -1,10 +1,7 @@
-from typing import Dict
-
-from pyngrok import ngrok
-
 import requests
 import json
 
+from pyngrok import ngrok
 
 def ngrok_process_is_running() -> bool:
     """ Returns true if an ngrok process is running
@@ -20,22 +17,23 @@ def ngrok_process_is_running() -> bool:
 
 
 """ NgrokManager is a wrapper provides an api for starting and shutting down ngrok tunnels
-{
-    port: int. The port to spawn the ngrok process to forward to
-    cycle_time: int. The number of seconds to run each ngrok process for
-}
+
 """
 
 class NgrokManager:
     
-    def __init__(self, config: Dict):
-        self.config = config
+    def __init__(self, port: int):
+        """
+        Args
+            port: int. The port to spawn the ngrok process to forward to
+        """
+        self._port = port
         self.tunnel = None
 
     def start_tunnel(self):
         """ Start a ngrok tunnel
         """
-        self.tunnel = ngrok.connect(addr=self.config["port"])
+        self.tunnel = ngrok.connect(addr=self._port)
 
     def stop_tunnel(self):
         """ Kill the current running ngrok tunnels
