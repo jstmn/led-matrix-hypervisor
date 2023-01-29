@@ -6,7 +6,7 @@ import time
 
 class StateManager:
     
-    APP_DOWNLOAD_NAME = "led-matrix-app-executable/"
+    APP_DOWNLOAD_NAME = "temp-led-matrix-app/"
 
     def __init__(self, app_parent_directory: str):
         assert os.path.isdir(app_parent_directory), f"Parent direcory {app_parent_directory} doesn't exist"
@@ -17,7 +17,7 @@ class StateManager:
     def download_app(self):
         """  Reclone the app from github
         """
-        
+        print("StateManager - Downloading app")
         cmd = f"git clone git@github.com:jstmn/led-matrix-app.git {self._app_directory}"
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         (output, err) = p.communicate()  
@@ -26,6 +26,7 @@ class StateManager:
     def delete_app(self):
         """ Delete the app from disk
         """
+        print("StateManager - Deleting app")
         cmd = f"rm -rf {self._app_directory}"
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         (output, err) = p.communicate()  

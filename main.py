@@ -16,13 +16,11 @@ app = Flask(__name__)
 # Constants
 PORT = 5001
 APP_PORT = 5000
-#HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
-#HEROKU_HOSTNAME = "http://127.0.0.1:5002"
-HEROKU_HOSTNAME = "http://e0f8-98-42-2-132.ngrok.io"
+HEROKU_HOSTNAME = "http://jeremysmorgan.herokuapp.com"
 
 
 APP_PARENT_DIRECTORY = "/home/pi/Desktop/"
-APP_URL = f"http://127.0.0.1:{APP_PORT}/LED"
+APP_URL = f"http://127.0.0.1:{APP_PORT}/led"
 NGROK_CYCLE_TIME_SEC = 30*60
 UPDATE_HEROKU_HOSTNAME_URL = f"{HEROKU_HOSTNAME}/update_rpi_hypervisor_address"
 UPDATE_HEROKU_HOSTNAME_INTERVAL = 5
@@ -30,6 +28,8 @@ UPDATE_HEROKU_HOSTNAME_INTERVAL = 5
 
 # Configs
 state_manager = StateManager(APP_PARENT_DIRECTORY)
+state_manager.delete_app()
+state_manager.download_app()
 state_manager.run()
 
 hypervisor_ngrok_manager = NgrokManager(PORT)
@@ -50,7 +50,7 @@ def update_heroku_known_hostnames_thread():
         if exit_thread:
             break
 
-@app.route('/LED', methods=['POST'])
+@app.route('/led', methods=['POST'])
 def parse_request(): 
     res = send_json_post(APP_URL, request.json, verbose=False)
     if res is None:

@@ -4,7 +4,12 @@ import json
 
 from utils import send_json_post
 
-_APP_URL = f"http://127.0.0.1:5000/LED"
+_APP_URL = f"http://127.0.0.1:5000/led"
+
+""" Example usage
+
+python send_saved_json_to_app.py --filenam=red_check
+"""
 
 if __name__ == "__main__":
 
